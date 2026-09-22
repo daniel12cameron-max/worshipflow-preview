@@ -882,6 +882,69 @@ byId("outputSetupButton").addEventListener("click", function () {
   openDialog("outputDialog");
 });
 
+byId("settingsButton").addEventListener("click", function () {
+  openDialog("settingsDialog");
+});
+
+function showSettingsInfo(title, eyebrow, html) {
+  byId("settingsDialog").close();
+  setTimeout(function () { showInfo(title, eyebrow, html); }, 140);
+}
+
+byId("settingsSignInButton").addEventListener("click", function () {
+  showSettingsInfo(
+    "Church accounts",
+    "Account & team",
+    "<p>The finished app will let each church create its own private workspace, then invite planners, presenters, worship leaders, and announcement contributors with separate permissions.</p><p>After the first sign-in, the Windows app will keep working offline and synchronize changes when the internet returns. Account creation is not active in this browser preview yet.</p>"
+  );
+});
+
+byId("settingsOutputButton").addEventListener("click", function () {
+  byId("settingsDialog").close();
+  setTimeout(function () {
+    renderOutputState();
+    openDialog("outputDialog");
+  }, 140);
+});
+
+byId("manageBiblesButton").addEventListener("click", function () {
+  showSettingsInfo(
+    "Bible downloads",
+    "Offline Scripture library",
+    "<p>WorshipFlow can support a large downloadable Bible catalog. The first release can start with these 12 redistribution-safe English editions, with the most useful three installed by default.</p>" +
+    '<div class="bible-starter-list">' +
+      '<div><strong>King James Version</strong><span>Installed</span></div>' +
+      '<div><strong>World English Bible</strong><span>Installed</span></div>' +
+      '<div><strong>Berean Standard Bible</strong><span>Installed</span></div>' +
+      '<div><strong>American Standard Version</strong><span class="available">Download</span></div>' +
+      '<div><strong>Open English Bible</strong><span class="available">Download</span></div>' +
+      '<div><strong>Literal Standard Version</strong><span class="available">Download</span></div>' +
+      '<div><strong>Darby Translation</strong><span class="available">Download</span></div>' +
+      '<div><strong>Young\'s Literal Translation</strong><span class="available">Download</span></div>' +
+      '<div><strong>Douay-Rheims 1899</strong><span class="available">Download</span></div>' +
+      '<div><strong>Geneva Bible 1599</strong><span class="available">Download</span></div>' +
+      '<div><strong>World English Bible British</strong><span class="available">Download</span></div>' +
+      '<div><strong>World Messianic Bible</strong><span class="available">Download</span></div>' +
+    "</div><p>Translations such as NIV, NLT, NKJV, ESV, and Amplified require separate publisher permission and cannot simply be bundled.</p>"
+  );
+});
+
+byId("songSelectSettingsButton").addEventListener("click", function () {
+  showSettingsInfo(
+    "SongSelect connection",
+    "CCLI integration",
+    "<p>Yes, SongSelect can be integrated so a church signs into its own CCLI account, searches licensed songs, and imports lyrics and song details.</p><p>The live connection requires WorshipFlow to be approved as a CCLI partner and issued official API credentials. We will never ask churches to paste their CCLI password into WorshipFlow or scrape the SongSelect website.</p>"
+  );
+});
+
+byId("easyWorshipSettingsButton").addEventListener("click", function () {
+  showSettingsInfo(
+    "Import and backup",
+    "Migration",
+    "<p>The Windows migration assistant will scan an EasyWorship 7 installation, show exactly what it found, and let the operator choose songs, schedules, images, videos, and presentations before copying anything.</p><p>The original EasyWorship files will remain untouched. WorshipFlow will keep a local church library and can add encrypted cloud backup after the church signs in.</p>"
+  );
+});
+
 byId("helpButton").addEventListener("click", function () {
   showInfo(
     "Try the Sunday workflow",
