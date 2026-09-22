@@ -242,6 +242,55 @@ body.controls-collapsed .panel-collapse-bar { justify-content: center; }
 .schedule-state { color: var(--faint); font-size: 11px; }
 .schedule-item.live-now .schedule-state { color: var(--live); }
 .schedule-actions { display: grid; gap: 6px; margin-top: 9px; }
+.library-dock { margin-top: 9px; border: 1px solid #37404a; background: #1c2127; }
+.library-dock-heading {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid #343c45;
+  padding: 6px 7px 5px 9px;
+}
+.library-dock-heading span, .library-dock-heading small { display: block; }
+.library-dock-heading span { color: #e1e7ed; font-size: 10px; font-weight: 650; }
+.library-dock-heading small { margin-top: 2px; color: #788592; font-size: 7px; }
+.library-dock-heading button {
+  width: 27px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #414b55;
+  border-radius: 3px;
+  background: #2b323a;
+  color: #aad4f4;
+  cursor: pointer;
+}
+.library-dock-heading button:hover { border-color: #5790ba; background: #334352; }
+.library-dock-tabs.resource-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-self: auto;
+  gap: 3px;
+  padding: 5px;
+}
+.library-dock-tabs.resource-tabs button {
+  min-width: 0;
+  min-height: 45px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 3px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 4px 2px;
+  background: #252b32;
+}
+.library-dock-tabs button > span { color: #9dccf0; font-size: 14px; line-height: 1; }
+.library-dock-tabs button > small { color: #9da8b3; font-size: 7px; line-height: 1; }
+.library-dock-tabs.resource-tabs button:hover { border-color: #4c6579; background: #2b343d; }
+.library-dock-tabs.resource-tabs button.active { border-color: #4e8abc; background: #29445b; }
+.library-dock-tabs button.active > span, .library-dock-tabs button.active > small { color: #edf8ff; }
 
 .primary-button, .secondary-button, .primary-small, .go-live-button,
 .live-control-grid button, .output-row, .line-mode button, .resource-tabs button {
@@ -413,6 +462,11 @@ body.controls-collapsed .panel-collapse-bar { justify-content: center; }
 .resource-tabs { display: flex; align-self: stretch; }
 .resource-tabs button { min-width: 68px; border-color: transparent; border-radius: 2px; padding: 5px 8px; background: transparent; color: #aab3bd; font-size: 9px; }
 .resource-tabs button.active { border-color: #3b6587; background: #263d50; color: #e4f3ff; }
+.resource-current { min-width: 116px; display: flex; align-items: center; gap: 7px; }
+.resource-current > span { width: 27px; height: 27px; display: grid; place-items: center; border-radius: 3px; background: #334554; color: #a8d7fa; font-size: 12px; }
+.resource-current small, .resource-current strong { display: block; }
+.resource-current small { color: #788592; font-size: 7px; text-transform: uppercase; letter-spacing: .06em; }
+.resource-current strong { margin-top: 1px; font-size: 10px; }
 .resource-search { height: 29px; min-width: 150px; flex: 1; display: flex; align-items: center; gap: 5px; border: 1px solid var(--stroke); padding: 0 8px; background: #1d2228; color: var(--faint); }
 .resource-search input { width: 100%; height: 100%; border: 0; outline: 0; background: transparent; color: #fff; font-size: 10px; }
 .resource-search input::placeholder { color: #75808b; }
