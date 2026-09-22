@@ -2,21 +2,24 @@
 
 **[Open the live interactive preview](https://daniel12cameron-max.github.io/worshipflow-preview/)**
 
-![WorshipFlow interface preview](worshipflow-preview.png)
+![WorshipFlow schedule, Preview, Live, lyric lines, and output controls](worshipflow-easyworship-preview.jpg)
 
-This public repository contains the browser-safe demonstration of WorshipFlow, an offline-first church presentation app.
+WorshipFlow is an offline-first church presentation app with a simple, schedule-first Sunday workflow. This public repository contains the browser-safe interactive demonstration.
 
-## Try the workflow
+## Try the Sunday workflow
 
-- Choose songs or a Bible passage from the Library
-- Single-click a slide to load Preview
-- Double-click a slide to send it to Program
-- Change backgrounds and test Clear, Black Screen, and Show Logo
-- Paste lyrics and split them into slides using blank lines
-- Simulate the NDI control state
+- Choose an item from the Sunday Schedule
+- Single-click a lyric line to place it in Preview
+- Double-click a line, press Enter, or use Go Live to send it to the congregation
+- Switch between one-line and two-line lyric grouping
+- Paste a new song and add it to the service
+- Open Plan service to reorder the schedule and view collaborators
+- Submit an announcement, approve it, and add it to Sunday automatically
+- Preview the Stage Output and simulate NDI and paired Web Output connections
+- Change backgrounds and test Clear, Black, and Logo controls
 
 ## Demo limits
 
-The browser preview demonstrates the operator workflow and resets when the page refreshes. It does not read or change files on your computer. The installable Windows app will provide the real projector/second-display output, native NDI output, offline library, Bible integrations, and safe EasyWorship 7 migration.
+The browser preview demonstrates the workflow and resets when the page refreshes. It does not read or change files on your computer. The installable Windows app will provide real projector and stage windows, native NDI output, offline storage, Bible integrations, and a safe EasyWorship 7 migration assistant.
 
-The Windows application source remains in a separate private repository; this public repository contains only the preview.
+The Windows application source remains in a separate private repository. This public repository contains only the preview.
