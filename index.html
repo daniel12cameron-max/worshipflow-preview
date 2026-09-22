@@ -6,7 +6,7 @@
   <meta name="description" content="Interactive preview of WorshipFlow, an offline-first church presentation and service-planning application.">
   <title>WorshipFlow — Sunday Presentation</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232778c8'/%3E%3Cpath d='M13 18h9l5 27 5-19h7l5 19 5-27h9L50 50H39l-4-15-4 15H20z' fill='white'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="app.css?v=20260922c">
+  <link rel="stylesheet" href="app.css?v=20260922d">
 </head>
 <body>
   <div class="app-shell">
@@ -60,6 +60,19 @@
           <button class="secondary-button" id="addScheduleItemButton" type="button">＋ Add from library</button>
           <button class="secondary-button" id="submitAnnouncementButton" type="button">＋ Submit announcement</button>
         </div>
+
+        <nav class="library-dock" aria-label="Open resource library">
+          <div class="library-dock-heading">
+            <div><span>Resource library</span><small>Opens in the panel beside this</small></div>
+            <button id="librarySearchButton" type="button" aria-label="Search the resource library" title="Search library">⌕</button>
+          </div>
+          <div class="resource-tabs library-dock-tabs" id="libraryDockTabs" role="tablist" aria-label="Resource categories">
+            <button class="active" data-resource-tab="song" type="button"><span>♫</span><small>Songs</small></button>
+            <button data-resource-tab="bible" type="button"><span>✦</span><small>Scripture</small></button>
+            <button data-resource-tab="media" type="button"><span>▧</span><small>Media</small></button>
+            <button data-resource-tab="announcement" type="button"><span>◆</span><small>Notices</small></button>
+          </div>
+        </nav>
       </aside>
 
       <section class="operator-panel" aria-label="Presentation operator">
@@ -115,11 +128,9 @@
 
         <section class="resource-tray" aria-label="Resource library">
           <div class="resource-toolbar">
-            <div class="resource-tabs" role="tablist" aria-label="Resource categories">
-              <button class="active" data-resource-tab="song" type="button">Songs</button>
-              <button data-resource-tab="bible" type="button">Scripture</button>
-              <button data-resource-tab="media" type="button">Media</button>
-              <button data-resource-tab="announcement" type="button">Announcements</button>
+            <div class="resource-current" aria-live="polite">
+              <span id="currentResourceIcon">♫</span>
+              <div><small>Resource library</small><strong id="currentResourceLabel">Songs</strong></div>
             </div>
             <label class="resource-search"><span>⌕</span><input id="searchInput" type="search" placeholder="Search resources" autocomplete="off"></label>
             <button class="primary-small" id="resourceActionButton" type="button">＋ Add song</button>
@@ -398,6 +409,6 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=20260922c"></script>
+  <script src="app.js?v=20260922d"></script>
 </body>
 </html>
