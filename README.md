@@ -9,13 +9,16 @@ WorshipFlow is an offline-first church presentation app with a simple, schedule-
 ## Try the Sunday workflow
 
 - Choose an item from the Sunday Schedule
+- Keep Preview and Live pinned while scrolling through long lyric and media lists
 - Single-click a lyric line to place it in Preview
 - Double-click a line, press Enter, or use Go Live to send it to the congregation
 - Switch between one-line and two-line lyric grouping
+- Collapse the schedule, lyric area, resource library, or output controls—or use Focus view
 - Paste a new song and add it to the service
+- Organize media into Videos, Images, PowerPoint, and Screen Share sources
 - Open Plan service to reorder the schedule and view collaborators
 - Submit an announcement, approve it, and add it to Sunday automatically
-- Preview the Stage Output and simulate NDI and paired Web Output connections
+- Expand and inspect Main, Stage, NDI, and paired Web Output screens
 - Change backgrounds and test Clear, Black, and Logo controls
 
 ## Demo limits
