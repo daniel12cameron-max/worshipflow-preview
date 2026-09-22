@@ -6,7 +6,7 @@
   <meta name="description" content="Interactive preview of WorshipFlow, an offline-first church presentation and service-planning application.">
   <title>WorshipFlow — Sunday Presentation</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232778c8'/%3E%3Cpath d='M13 18h9l5 27 5-19h7l5 19 5-27h9L50 50H39l-4-15-4 15H20z' fill='white'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="app.css?v=20260922d">
+  <link rel="stylesheet" href="app.css?v=20260922e">
 </head>
 <body>
   <div class="app-shell">
@@ -29,6 +29,7 @@
       <div class="top-actions">
         <span class="save-state" id="saveState"><i></i> Saved locally</span>
         <button class="quiet-button focus-button" id="focusModeButton" type="button" aria-pressed="false">Focus view</button>
+        <button class="quiet-button settings-button" id="settingsButton" type="button"><span aria-hidden="true">⚙</span> Settings</button>
         <button class="quiet-button" id="helpButton" type="button">Help</button>
       </div>
     </header>
@@ -397,6 +398,55 @@
     </form>
   </dialog>
 
+  <dialog id="settingsDialog" class="wide-dialog settings-dialog">
+    <form method="dialog">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">WorshipFlow</p><h2>Settings</h2></div>
+        <button class="close-button" value="cancel" aria-label="Close settings" type="submit">×</button>
+      </div>
+      <p class="settings-intro">Keep the usual controls close by and the technical setup in one simple place.</p>
+
+      <section class="account-settings-card">
+        <span class="settings-icon">DC</span>
+        <div><strong>Grace Temple AOG</strong><small>Preview mode · saved on this device</small></div>
+        <button class="primary-small" id="settingsSignInButton" type="button">Sign in or create church</button>
+      </section>
+
+      <div class="settings-grid">
+        <section class="settings-group">
+          <div class="settings-group-heading"><span class="settings-icon">▣</span><div><strong>Displays & outputs</strong><small>Main, stage, NDI, and Web Output</small></div></div>
+          <div class="settings-row"><span><strong>Main display</strong><small>1920 × 1080 · 16:9</small></span><em class="status-ready">Ready</em></div>
+          <div class="settings-row"><span><strong>Stage layout</strong><small>Current line + next line + clock</small></span><em>Default</em></div>
+          <button class="settings-link" id="settingsOutputButton" type="button">Open output setup <span>›</span></button>
+        </section>
+
+        <section class="settings-group">
+          <div class="settings-group-heading"><span class="settings-icon">✦</span><div><strong>Bible library</strong><small>Downloaded translations work offline</small></div></div>
+          <div class="settings-row"><span><strong>Default translation</strong><small>King James Version</small></span><em>KJV</em></div>
+          <div class="settings-row"><span><strong>Starter library</strong><small>12 redistribution-safe English editions</small></span><em class="status-ready">3 installed</em></div>
+          <button class="settings-link" id="manageBiblesButton" type="button">Manage Bible downloads <span>›</span></button>
+        </section>
+
+        <section class="settings-group">
+          <div class="settings-group-heading"><span class="settings-icon">⌁</span><div><strong>Integrations</strong><small>Connect licensed services and imports</small></div></div>
+          <div class="settings-row"><span><strong>SongSelect by CCLI</strong><small>Each church connects its own licensed account</small></span><em>Approval needed</em></div>
+          <button class="settings-link" id="songSelectSettingsButton" type="button">About SongSelect connection <span>›</span></button>
+          <div class="settings-row"><span><strong>EasyWorship 7</strong><small>Import songs, schedules, and media</small></span><em>Planned</em></div>
+        </section>
+
+        <section class="settings-group">
+          <div class="settings-group-heading"><span class="settings-icon">◉</span><div><strong>Storage & backup</strong><small>Offline first, then safely synchronized</small></div></div>
+          <div class="settings-row"><span><strong>Local autosave</strong><small>Save every change on this computer</small></span><em class="status-ready">On</em></div>
+          <div class="settings-row"><span><strong>Church cloud</strong><small>Schedules, announcements, and team access</small></span><em>Sign in first</em></div>
+          <button class="settings-link" id="easyWorshipSettingsButton" type="button">Review import and backup plan <span>›</span></button>
+        </section>
+      </div>
+
+      <p class="settings-demo-note">This preview shows the intended setup. Real accounts, downloads, NDI, and importing will be built into the installable Windows application.</p>
+      <div class="dialog-actions"><button class="primary-button" value="default" type="submit">Done</button></div>
+    </form>
+  </dialog>
+
   <dialog id="infoDialog" class="form-dialog">
     <form method="dialog">
       <div class="dialog-heading">
@@ -409,6 +459,6 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=20260922d"></script>
+  <script src="app.js?v=20260922e"></script>
 </body>
 </html>
