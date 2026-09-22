@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Interactive preview of WorshipFlow, an offline-first church presentation application.">
-  <title>WorshipFlow — Interactive Preview</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230b7cff'/%3E%3Cpath d='M13 18h9l5 27 5-19h7l5 19 5-27h9L50 50H39l-4-15-4 15H20z' fill='white'/%3E%3C/svg%3E">
+  <meta name="description" content="Interactive preview of WorshipFlow, an offline-first church presentation and service-planning application.">
+  <title>WorshipFlow — Sunday Presentation</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232778c8'/%3E%3Cpath d='M13 18h9l5 27 5-19h7l5 19 5-27h9L50 50H39l-4-15-4 15H20z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="app.css">
 </head>
 <body>
@@ -15,162 +15,295 @@
         <div class="app-mark" aria-hidden="true">W</div>
         <div class="brand-copy">
           <strong>WorshipFlow</strong>
-          <span>Offline presentation</span>
+          <span>Sunday presentation</span>
         </div>
-        <span class="demo-chip">Interactive preview</span>
+        <span class="preview-badge">Interactive preview</span>
       </div>
+
+      <nav class="main-nav" aria-label="Main sections">
+        <button class="active" type="button" aria-current="page">Present</button>
+        <button id="planButton" type="button">Plan service</button>
+        <button id="inboxButton" type="button">Announcements <span class="count-badge" id="inboxCount">1</span></button>
+      </nav>
+
       <div class="top-actions">
-        <span class="save-state"><i></i> Demo ready</span>
-        <button class="quiet-button" id="helpButton" type="button">How to try it</button>
+        <span class="save-state" id="saveState"><i></i> Saved locally</span>
+        <button class="quiet-button" id="helpButton" type="button">Help</button>
       </div>
     </header>
 
     <main class="workspace">
-      <aside class="library-panel" aria-label="Content library">
-        <div class="panel-heading">
+      <aside class="schedule-panel" aria-label="Sunday schedule">
+        <div class="panel-title-row">
           <div>
-            <p class="eyebrow">Content</p>
-            <h1>Library</h1>
+            <p class="eyebrow">Sunday schedule</p>
+            <h1>Morning Worship</h1>
+            <p class="service-time">Sep 27 · 10:30 AM</p>
           </div>
-          <span class="item-count" id="itemCount">5 items</span>
+          <button class="icon-button" id="openPlanButton" type="button" aria-label="Edit service plan">✎</button>
         </div>
 
-        <label class="search-box">
-          <span aria-hidden="true">⌕</span>
-          <input id="searchInput" type="search" placeholder="Search songs and media" autocomplete="off">
-        </label>
-
-        <div class="library-actions">
-          <button class="primary-button" id="addSongButton" type="button"><span>＋</span> Add song</button>
-          <button class="secondary-button" id="addMediaButton" type="button"><span>＋</span> Add media</button>
-        </div>
-        <button class="import-button" id="importButton" type="button"><span>⇩</span> Import EasyWorship 7</button>
-
-        <div class="filter-tabs" role="tablist" aria-label="Library filters">
-          <button class="active" data-filter="all" type="button">All</button>
-          <button data-filter="song" type="button">Songs</button>
-          <button data-filter="bible" type="button">Bible</button>
+        <div class="service-status">
+          <div class="team-stack" aria-label="Three collaborators">
+            <span>DC</span><span>ML</span><span>+1</span>
+          </div>
+          <div><strong id="serviceStatusText">Ready for Sunday</strong><small>3 people collaborating</small></div>
         </div>
 
-        <div class="library-list" id="libraryList"></div>
+        <div class="schedule-list" id="scheduleList"></div>
+
+        <div class="schedule-actions">
+          <button class="secondary-button" id="addScheduleItemButton" type="button">＋ Add from library</button>
+          <button class="secondary-button" id="submitAnnouncementButton" type="button">＋ Submit announcement</button>
+        </div>
       </aside>
 
-      <section class="operator-panel" aria-label="Presentation controls">
-        <div class="operator-heading">
-          <div>
-            <p class="eyebrow">Current item</p>
-            <h2 id="currentTitle">Amazing Grace</h2>
-            <p id="currentMeta">Public-domain hymn · 4 slides</p>
-          </div>
-          <button class="go-live-button" id="sendButton" type="button"><span aria-hidden="true">▶</span> Send to Program</button>
-        </div>
-
-        <div class="monitor-grid">
-          <article class="monitor-card preview-card">
-            <div class="monitor-label">
-              <div><i class="preview-dot"></i><strong>Preview</strong></div>
-              <span id="previewNumber">Slide 1 of 4</span>
+      <section class="operator-panel" aria-label="Presentation operator">
+        <div class="screen-strip">
+          <article class="screen-card preview-screen-card">
+            <div class="screen-label">
+              <div><i></i><strong>Preview</strong></div>
+              <span id="previewNumber">Line 1</span>
             </div>
-            <div class="monitor" id="previewMonitor" aria-live="polite">
-              <div class="ambient ambient-one"></div>
-              <div class="ambient ambient-two"></div>
-              <div class="slide-copy" id="previewCopy"></div>
+            <div class="screen" id="previewMonitor" aria-live="polite">
+              <div class="screen-copy" id="previewCopy"></div>
             </div>
           </article>
 
-          <article class="monitor-card program-card">
-            <div class="monitor-label">
-              <div><i class="program-dot"></i><strong>Program</strong></div>
-              <span id="programNumber">Live · Slide 1</span>
+          <div class="take-controls">
+            <button class="go-live-button" id="sendButton" type="button"><span>▶</span> Go Live</button>
+            <span>Enter</span>
+          </div>
+
+          <article class="screen-card live-screen-card">
+            <div class="screen-label">
+              <div><i></i><strong>Live</strong></div>
+              <span id="programNumber">On screen</span>
             </div>
-            <div class="monitor" id="programMonitor" aria-live="polite">
-              <div class="ambient ambient-one"></div>
-              <div class="ambient ambient-two"></div>
-              <div class="slide-copy" id="programCopy"></div>
-              <div class="blackout-label" id="blackoutLabel">Black screen</div>
+            <div class="screen" id="programMonitor" aria-live="polite">
+              <div class="screen-copy" id="programCopy"></div>
+              <div class="blackout-label">Black screen</div>
             </div>
           </article>
         </div>
 
-        <div class="program-actions" aria-label="Program controls">
-          <button id="clearButton" type="button"><span>⌫</span> Clear Program</button>
-          <button id="blackButton" type="button"><span>■</span> Black Screen</button>
-          <button id="logoButton" type="button"><span>▣</span> Show Logo</button>
-        </div>
-
-        <div class="slides-heading">
-          <div>
-            <p class="eyebrow">Sequence</p>
-            <h2>Slides <span id="slideCount">4</span></h2>
+        <section class="line-workspace" aria-label="Song line control">
+          <div class="item-heading">
+            <div>
+              <p class="eyebrow" id="currentType">Song</p>
+              <h2 id="currentTitle">Amazing Grace</h2>
+              <p id="currentMeta">John Newton · Public domain</p>
+            </div>
+            <div class="line-mode" role="group" aria-label="Lines per screen">
+              <span>Show</span>
+              <button class="active" data-line-mode="1" type="button">1 line</button>
+              <button data-line-mode="2" type="button">2 lines</button>
+            </div>
           </div>
-          <p><b>Click once</b> to preview · <b>Double-click</b> to go live</p>
-        </div>
-        <div class="slides-grid" id="slidesGrid"></div>
+
+          <div class="line-help">
+            <span><b>Click a line</b> to place it in Preview</span>
+            <span><b>Double-click</b> to send it Live</span>
+          </div>
+          <div class="cue-list" id="cueList"></div>
+        </section>
+
+        <section class="resource-tray" aria-label="Resource library">
+          <div class="resource-toolbar">
+            <div class="resource-tabs" role="tablist" aria-label="Resource categories">
+              <button class="active" data-resource-tab="song" type="button">Songs</button>
+              <button data-resource-tab="bible" type="button">Scripture</button>
+              <button data-resource-tab="media" type="button">Media</button>
+              <button data-resource-tab="announcement" type="button">Announcements</button>
+            </div>
+            <label class="resource-search"><span>⌕</span><input id="searchInput" type="search" placeholder="Search resources" autocomplete="off"></label>
+            <button class="primary-small" id="addSongButton" type="button">＋ Add song</button>
+          </div>
+          <div class="resource-list" id="resourceList"></div>
+        </section>
       </section>
 
-      <aside class="control-panel" aria-label="Background and output controls">
-        <section>
-          <div class="panel-heading compact">
-            <div>
-              <p class="eyebrow">Layers</p>
-              <h2>Background</h2>
-            </div>
-            <span>Preview</span>
+      <aside class="control-panel" aria-label="Live and output controls">
+        <section class="control-section">
+          <p class="eyebrow">Live controls</p>
+          <div class="live-control-grid">
+            <button id="clearButton" type="button"><span>⌫</span> Clear</button>
+            <button id="blackButton" type="button"><span>■</span> Black</button>
+            <button id="logoButton" type="button"><span>▣</span> Logo</button>
           </div>
+        </section>
+
+        <section class="control-section">
+          <div class="section-title-row"><div><p class="eyebrow">Theme</p><h2>Background</h2></div><span>Preview</span></div>
           <div class="background-list" id="backgroundList"></div>
         </section>
 
-        <section class="outputs-section">
-          <p class="eyebrow">Connections</p>
-          <h2>Outputs</h2>
-          <div class="output-card">
-            <span class="output-icon">▣</span>
-            <div>
-              <strong>Projector</strong>
-              <small>1920 × 1080 · 60 Hz</small>
-              <em><i></i> Ready</em>
+        <section class="control-section output-section">
+          <div class="section-title-row"><div><p class="eyebrow">Connections</p><h2>Outputs</h2></div><button class="text-button" id="outputSetupButton" type="button">Setup</button></div>
+          <div class="output-list">
+            <div class="output-row ready">
+              <span class="output-icon">▣</span>
+              <div><strong>Main display</strong><small>1920 × 1080</small></div>
+              <em>Ready</em>
             </div>
+            <button class="output-row ready output-button" id="stageButton" type="button">
+              <span class="output-icon">Aa</span>
+              <div><strong>Stage output</strong><small>Current + next</small></div>
+              <em>Preview</em>
+            </button>
+            <button class="output-row output-button" id="ndiButton" type="button">
+              <span class="output-icon">N</span>
+              <div><strong>NDI stream</strong><small>Transparent lyrics</small></div>
+              <em id="ndiStatus">Off</em>
+            </button>
+            <button class="output-row output-button" id="webOutputButton" type="button">
+              <span class="output-icon">⌁</span>
+              <div><strong>Web output</strong><small>Browser or remote room</small></div>
+              <em id="webStatus">Pair</em>
+            </button>
           </div>
-          <div class="output-card ndi-card">
-            <span class="output-icon">⌁</span>
-            <div>
-              <strong>NDI Output</strong>
-              <small>Browser demonstration</small>
-              <button id="ndiButton" type="button">Enable demo</button>
-            </div>
-          </div>
-          <p class="output-note">The Windows app will provide the actual projector and NDI signals. This web preview demonstrates the operator workflow.</p>
+          <p class="demo-note">The preview simulates connections. The Windows build will create the real display, NDI, and network outputs.</p>
         </section>
       </aside>
     </main>
   </div>
 
-  <dialog id="songDialog">
+  <dialog id="songDialog" class="form-dialog">
     <form method="dialog" id="songForm">
       <div class="dialog-heading">
-        <div>
-          <p class="eyebrow">Library</p>
-          <h2>Add lyrics</h2>
-        </div>
+        <div><p class="eyebrow">Song library</p><h2>Add lyrics</h2></div>
         <button class="close-button" value="cancel" aria-label="Close dialog" type="submit">×</button>
       </div>
-      <p>Paste the complete song. Leave a blank line between each slide.</p>
+      <p>Each typed line becomes selectable in Line Mode. Leave a blank line between verses or choruses.</p>
       <label>Song title<input id="songTitleInput" required placeholder="Enter the song title"></label>
-      <label>Lyrics<textarea id="lyricsInput" required placeholder="First slide lyrics&#10;&#10;Second slide lyrics&#10;&#10;Third slide lyrics"></textarea></label>
+      <label>Lyrics<textarea id="lyricsInput" required placeholder="Verse line one&#10;Verse line two&#10;&#10;Chorus line one&#10;Chorus line two"></textarea></label>
       <div class="dialog-actions">
         <button class="secondary-button" value="cancel" type="submit">Cancel</button>
-        <button class="primary-button" id="saveSongButton" value="default" type="submit">Save song</button>
+        <button class="primary-button" value="default" type="submit">Save song</button>
       </div>
     </form>
   </dialog>
 
-  <dialog id="infoDialog">
+  <dialog id="announcementDialog" class="form-dialog">
+    <form method="dialog" id="announcementForm">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Church contributor</p><h2>Submit an announcement</h2></div>
+        <button class="close-button" value="cancel" aria-label="Close dialog" type="submit">×</button>
+      </div>
+      <p>Anyone given the church submission link can send an announcement for review.</p>
+      <div class="form-grid">
+        <label>Announcement title<input id="announcementTitle" required placeholder="Youth fundraiser"></label>
+        <label>Event date<input id="announcementDate" required type="date" value="2026-10-04"></label>
+      </div>
+      <label>Details<textarea id="announcementDetails" required placeholder="What should the church know?"></textarea></label>
+      <div class="form-grid">
+        <label>Submitted by<input id="announcementAuthor" required placeholder="Ministry or person"></label>
+        <label>Stop showing after<input id="announcementExpires" required type="date" value="2026-10-04"></label>
+      </div>
+      <div class="upload-placeholder"><span>▧</span><div><strong>Add image or video</strong><small>Demonstration only—no file is uploaded</small></div><button id="fakeUploadButton" type="button">Choose</button></div>
+      <div class="dialog-actions">
+        <button class="secondary-button" value="cancel" type="submit">Cancel</button>
+        <button class="primary-button" value="default" type="submit">Send for approval</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="inboxDialog" class="wide-dialog">
     <form method="dialog">
       <div class="dialog-heading">
-        <div>
-          <p class="eyebrow" id="infoEyebrow">Preview</p>
-          <h2 id="infoTitle">How to try it</h2>
-        </div>
+        <div><p class="eyebrow">Approval inbox</p><h2>Church announcements</h2></div>
+        <button class="close-button" value="cancel" aria-label="Close dialog" type="submit">×</button>
+      </div>
+      <p>Review submissions before they are added to Sunday’s schedule.</p>
+      <div class="inbox-list" id="inboxList"></div>
+      <div class="dialog-actions"><button class="primary-button" value="default" type="submit">Done</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="planDialog" class="wide-dialog">
+    <form method="dialog">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Shared service plan</p><h2>Morning Worship · Sep 27</h2></div>
+        <button class="close-button" value="cancel" aria-label="Close dialog" type="submit">×</button>
+      </div>
+      <div class="planner-summary">
+        <div><span id="serviceItemCount">8</span><small>Service items</small></div>
+        <div><span>3</span><small>Collaborators</small></div>
+        <div><span id="pendingSummary">1</span><small>Awaiting review</small></div>
+      </div>
+      <div class="planner-columns">
+        <section><div class="mini-title"><h3>Order of service</h3><span>Use arrows to reorder</span></div><div class="planner-list" id="plannerList"></div></section>
+        <aside class="team-card">
+          <h3>Sunday team</h3>
+          <div class="team-person"><span>DC</span><div><strong>Daniel Cameron</strong><small>Media administrator</small></div></div>
+          <div class="team-person"><span>ML</span><div><strong>Michelle Lewis</strong><small>Worship leader</small></div></div>
+          <div class="team-person"><span>PA</span><div><strong>Pastor Allen</strong><small>Speaker</small></div></div>
+          <button class="secondary-button full-button" id="copyPlanLinkButton" type="button">Copy planning link</button>
+          <p>Team members can plan online. The Sunday computer downloads the completed service for offline use.</p>
+        </aside>
+      </div>
+      <div class="dialog-actions">
+        <button class="secondary-button" id="reviewInboxFromPlan" type="button">Review announcements</button>
+        <button class="primary-button" id="readyPlanButton" type="button">Mark service ready</button>
+        <button class="secondary-button" value="default" type="submit">Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="stageDialog" class="stage-dialog">
+    <form method="dialog">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Stage output</p><h2>Confidence monitor</h2></div>
+        <button class="close-button" value="cancel" aria-label="Close dialog" type="submit">×</button>
+      </div>
+      <div class="stage-screen">
+        <div class="stage-top"><span>WORSHIPFLOW STAGE</span><strong id="stageClock">10:30:00</strong></div>
+        <div class="stage-current"><small>CURRENT</small><p id="stageCurrent">Amazing grace, how sweet the sound</p></div>
+        <div class="stage-next"><small>NEXT</small><p id="stageNext">That saved a wretch like me</p></div>
+        <div class="stage-footer"><span>Service 00:18:42</span><span id="stageMessage">Welcome, worship team</span></div>
+      </div>
+      <div class="dialog-actions"><button class="primary-button" value="default" type="submit">Close preview</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="outputDialog" class="wide-dialog">
+    <form method="dialog">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Output routing</p><h2>Send each view where it belongs</h2></div>
+        <button class="close-button" value="cancel" aria-label="Close dialog" type="submit">×</button>
+      </div>
+      <div class="routing-table">
+        <div class="routing-head"><span>Destination</span><span>Content</span><span>Connection</span><span>Status</span></div>
+        <div><strong>Main display</strong><span>Full-screen Program</span><span>HDMI / window</span><em class="good">Ready</em></div>
+        <div><strong>Stage output</strong><span>Current + next + clock</span><span>HDMI / browser</span><em class="good">Ready</em></div>
+        <div><strong>NDI stream</strong><span>Transparent lower thirds</span><span>Church network</span><em id="routingNdi">Off</em></div>
+        <div><strong>Web output</strong><span>Full-screen Program</span><span>Browser / internet</span><em id="routingWeb">Not paired</em></div>
+      </div>
+      <p class="routing-note">NDI is intended for the local production network. Browser and internet delivery use a separate paired Web Output.</p>
+      <div class="dialog-actions"><button class="primary-button" value="default" type="submit">Done</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="webDialog" class="web-dialog">
+    <form method="dialog">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Web output</p><h2>Pair another screen</h2></div>
+        <button class="close-button" value="cancel" aria-label="Close dialog" type="submit">×</button>
+      </div>
+      <p>Open WorshipFlow Display on a television, laptop, or remote-room computer and enter this code.</p>
+      <div class="pair-code">482&nbsp;731</div>
+      <div class="pair-url">display.worshipflow.app/482731</div>
+      <div class="dialog-actions">
+        <button class="secondary-button" id="copyOutputLinkButton" type="button">Copy link</button>
+        <button class="primary-button" id="pairOutputButton" value="default" type="submit">Simulate connection</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="infoDialog" class="form-dialog">
+    <form method="dialog">
+      <div class="dialog-heading">
+        <div><p class="eyebrow" id="infoEyebrow">Preview</p><h2 id="infoTitle">How to try it</h2></div>
         <button class="close-button" value="cancel" aria-label="Close dialog" type="submit">×</button>
       </div>
       <div class="info-content" id="infoContent"></div>
