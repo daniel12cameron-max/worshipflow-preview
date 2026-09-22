@@ -6,7 +6,7 @@
   <meta name="description" content="Interactive preview of WorshipFlow, an offline-first church presentation and service-planning application.">
   <title>WorshipFlow — Sunday Presentation</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232778c8'/%3E%3Cpath d='M13 18h9l5 27 5-19h7l5 19 5-27h9L50 50H39l-4-15-4 15H20z' fill='white'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="app.css?v=20260922b">
+  <link rel="stylesheet" href="app.css?v=20260922c">
 </head>
 <body>
   <div class="app-shell">
@@ -28,6 +28,7 @@
 
       <div class="top-actions">
         <span class="save-state" id="saveState"><i></i> Saved locally</span>
+        <button class="quiet-button focus-button" id="focusModeButton" type="button" aria-pressed="false">Focus view</button>
         <button class="quiet-button" id="helpButton" type="button">Help</button>
       </div>
     </header>
@@ -40,7 +41,10 @@
             <h1>Morning Worship</h1>
             <p class="service-time">Sep 27 · 10:30 AM</p>
           </div>
-          <button class="icon-button" id="openPlanButton" type="button" aria-label="Edit service plan">✎</button>
+          <div class="panel-tools">
+            <button class="icon-button" id="openPlanButton" type="button" aria-label="Edit service plan">✎</button>
+            <button class="icon-button panel-toggle" id="toggleSchedulePanel" type="button" aria-label="Collapse Sunday schedule" aria-expanded="true">‹</button>
+          </div>
         </div>
 
         <div class="service-status">
@@ -59,7 +63,7 @@
       </aside>
 
       <section class="operator-panel" aria-label="Presentation operator">
-        <div class="screen-strip">
+        <div class="screen-strip" id="screenStrip">
           <article class="screen-card preview-screen-card">
             <div class="screen-label">
               <div><i></i><strong>Preview</strong></div>
@@ -98,6 +102,7 @@
               <span>Show</span>
               <button class="active" data-line-mode="1" type="button">1 line</button>
               <button data-line-mode="2" type="button">2 lines</button>
+              <button class="section-toggle" id="toggleLineWorkspace" type="button" aria-label="Collapse lyric lines" aria-expanded="true">⌃</button>
             </div>
           </div>
 
@@ -117,13 +122,24 @@
               <button data-resource-tab="announcement" type="button">Announcements</button>
             </div>
             <label class="resource-search"><span>⌕</span><input id="searchInput" type="search" placeholder="Search resources" autocomplete="off"></label>
-            <button class="primary-small" id="addSongButton" type="button">＋ Add song</button>
+            <button class="primary-small" id="resourceActionButton" type="button">＋ Add song</button>
+            <button class="section-toggle" id="toggleResourceTray" type="button" aria-label="Collapse resource library" aria-expanded="true">⌃</button>
+          </div>
+          <div class="media-subtabs" id="mediaSubtabs" hidden aria-label="Media categories">
+            <button class="active" data-media-filter="all" type="button">All media</button>
+            <button data-media-filter="video" type="button">Videos</button>
+            <button data-media-filter="image" type="button">Images</button>
+            <button data-media-filter="presentation" type="button">PowerPoint</button>
+            <button data-media-filter="screen" type="button">Screen share</button>
           </div>
           <div class="resource-list" id="resourceList"></div>
         </section>
       </section>
 
       <aside class="control-panel" aria-label="Live and output controls">
+        <div class="panel-collapse-bar">
+          <button class="icon-button panel-toggle" id="toggleControlPanel" type="button" aria-label="Collapse output controls" aria-expanded="true">›</button>
+        </div>
         <section class="control-section">
           <p class="eyebrow">Live controls</p>
           <div class="live-control-grid">
@@ -162,6 +178,25 @@
               <em id="webStatus">Pair</em>
             </button>
           </div>
+          <section class="output-preview-panel collapsed" id="outputPreviewPanel" aria-label="Other output previews">
+            <button class="output-preview-heading" id="toggleOutputPreview" type="button" aria-expanded="false">
+              <span><small>Other screens</small><strong id="outputPreviewTitle">Stage output</strong></span>
+              <span class="output-preview-chevron">⌄</span>
+            </button>
+            <div class="output-preview-body">
+              <div class="output-view-tabs" role="tablist" aria-label="Choose output screen">
+                <button data-output-view="main" type="button">Main</button>
+                <button class="active" data-output-view="stage" type="button">Stage</button>
+                <button data-output-view="ndi" type="button">NDI</button>
+                <button data-output-view="web" type="button">Web</button>
+              </div>
+              <div class="mini-output stage-mini" id="miniOutputCanvas">
+                <span class="mini-output-badge" id="miniOutputBadge">STAGE</span>
+                <div id="miniOutputContent"></div>
+              </div>
+              <button class="secondary-button full-button" id="openOutputLargeButton" type="button">Expand this screen</button>
+            </div>
+          </section>
           <p class="demo-note">The preview simulates connections. The Windows build will create the real display, NDI, and network outputs.</p>
         </section>
       </aside>
@@ -180,6 +215,43 @@
       <div class="dialog-actions">
         <button class="secondary-button" value="cancel" type="submit">Cancel</button>
         <button class="primary-button" value="default" type="submit">Save song</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="mediaDialog" class="form-dialog">
+    <form method="dialog" id="mediaForm">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Media library</p><h2>Add media</h2></div>
+        <button class="close-button" value="cancel" aria-label="Close dialog" type="submit">×</button>
+      </div>
+      <p>Add an image, video, or PowerPoint presentation. The Windows app will copy it into the offline church library.</p>
+      <div class="media-choice-grid">
+        <button data-media-add="image" type="button"><span>▧</span><strong>Images</strong><small>JPG, PNG, WebP</small></button>
+        <button data-media-add="video" type="button"><span>▶</span><strong>Videos</strong><small>MP4, MOV, WebM</small></button>
+        <button data-media-add="presentation" type="button"><span>P</span><strong>PowerPoint</strong><small>PPT and PPTX</small></button>
+        <button data-media-add="screen" type="button"><span>⌁</span><strong>Screen share</strong><small>Browser, app, or display</small></button>
+      </div>
+      <div class="dialog-actions"><button class="secondary-button" value="default" type="submit">Close</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="screenShareDialog" class="form-dialog">
+    <form method="dialog" id="screenShareForm">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Live source</p><h2>Share a screen</h2></div>
+        <button class="close-button" value="cancel" aria-label="Close dialog" type="submit">×</button>
+      </div>
+      <p>Choose the source you want to place in Preview. It will not become Live until you press Go Live.</p>
+      <div class="share-source-list" role="radiogroup" aria-label="Screen share source">
+        <label><input name="shareSource" type="radio" value="Browser tab" checked><span>▣</span><div><strong>Browser tab</strong><small>Share a website, YouTube, or online document</small></div></label>
+        <label><input name="shareSource" type="radio" value="Application window"><span>□</span><div><strong>Application window</strong><small>Share PowerPoint, a video player, or another app</small></div></label>
+        <label><input name="shareSource" type="radio" value="Entire display"><span>▤</span><div><strong>Entire display</strong><small>Share everything visible on one monitor</small></div></label>
+      </div>
+      <label class="audio-check"><input id="shareAudio" type="checkbox" checked> Include computer audio</label>
+      <div class="dialog-actions">
+        <button class="secondary-button" value="cancel" type="submit">Cancel</button>
+        <button class="primary-button" value="default" type="submit">Start in Preview</button>
       </div>
     </form>
   </dialog>
@@ -266,6 +338,20 @@
     </form>
   </dialog>
 
+  <dialog id="outputViewerDialog" class="stage-dialog output-viewer-dialog">
+    <form method="dialog">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Output preview</p><h2 id="largeOutputTitle">Stage output</h2></div>
+        <button class="close-button" value="cancel" aria-label="Close dialog" type="submit">×</button>
+      </div>
+      <div class="large-output-canvas stage-large" id="largeOutputCanvas">
+        <span class="large-output-badge" id="largeOutputBadge">STAGE</span>
+        <div id="largeOutputContent"></div>
+      </div>
+      <div class="dialog-actions"><button class="primary-button" value="default" type="submit">Close preview</button></div>
+    </form>
+  </dialog>
+
   <dialog id="outputDialog" class="wide-dialog">
     <form method="dialog">
       <div class="dialog-heading">
@@ -312,6 +398,6 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=20260922b"></script>
+  <script src="app.js?v=20260922c"></script>
 </body>
 </html>
