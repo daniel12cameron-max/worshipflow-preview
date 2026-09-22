@@ -20,6 +20,7 @@ WorshipFlow is an offline-first church presentation app with a simple, schedule-
 - Open Plan service to reorder the schedule and view collaborators
 - Submit an announcement, approve it, and add it to Sunday automatically
 - Expand and inspect Main, Stage, NDI, and paired Web Output screens
+- Open Settings to review church accounts, outputs, Bible downloads, SongSelect, storage, and EasyWorship migration
 - Change backgrounds and test Clear, Black, and Logo controls
 
 ## Demo limits
