@@ -101,10 +101,18 @@ function renderSlides() {
     </button>`).join("");
 }
 
+function syncSlideSelection() {
+  byId("slidesGrid").querySelectorAll("[data-slide-index]").forEach(button => {
+    const index = Number(button.dataset.slideIndex);
+    button.classList.toggle("preview-selected", index === previewIndex);
+    button.classList.toggle("program-selected", index === programIndex && programMode === "content");
+  });
+}
+
 function renderBackgrounds() {
   byId("backgroundList").innerHTML = backgrounds.map((background, index) => `
     <button class="background-option${index === previewBackground ? " active" : ""}" data-background-index="${index}" type="button">
-      <span class="background-swatch" style="--scene:${background.value}"></span>
+      <span class="background-swatch" style="--scene:${backkground.value}"></span>
       <small>${index + 1}. ${escapeHtml(background.name)}</small>
     </button>`).join("");
 }
@@ -164,7 +172,7 @@ byId("slidesGrid").addEventListener("click", event => {
   if (!button) return;
   previewIndex = Number(button.dataset.slideIndex);
   renderScreens();
-  renderSlides();
+  syncSlideSelection();
 });
 
 byId("slidesGrid").addEventListener("dblclick", event => {
@@ -198,7 +206,7 @@ byId("logoButton").addEventListener("click", () => { programMode = "logo"; progr
 byId("addSongButton").addEventListener("click", () => byId("songDialog").showModal());
 byId("addMediaButton").addEventListener("click", () => showInfo("Add media", "Desktop feature", "<p>The Windows app opens a file picker and copies selected images or videos into WorshipFlow's local media library. The web preview leaves your files untouched.</p>"));
 byId("importButton").addEventListener("click", () => showInfo("EasyWorship 7 import", "Migration preview", "<p>The finished importer will copy compatible songs, schedules, themes and media into WorshipFlow while leaving the original EasyWorship library unchanged.</p><p>This browser demonstration does not inspect files on your computer.</p>"));
-byId("helpButton").addEventListener("click", () => showInfo("How to try it", "Interactive preview", "<ol><li>Choose a song or Bible passage from the Library.</li><li>Click a slide once to place it in Preview.</li><li>Double-click it—or press <b>Send to Program</b>—to make it live.</li><li>Choose a background, then test Clear, Black Screen and Show Logo.</li><li>Use <b>Add song</b> to paste your own lyrics.</li></ol>"));
+byId("helpButton").addEventListener("click", () => showInfo("How to try it", "Interactive preview", "<ol><li>Choose a song or Bible passage from the Library.</li><li>Click a slide once to place it in Preview.</li><li>Double-click it—or press <b>Send to Program</b>—to make it live.</li><li>Choose a background, then test Clear, Black Scren and Show Logo.</li><li>Use <b>Add song</b> to paste your own lyrics.</li></ol>"));
 
 byId("ndiButton").addEventListener("click", event => {
   const card = event.currentTarget.closest(".ndi-card");
