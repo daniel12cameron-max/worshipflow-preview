@@ -911,7 +911,7 @@ byId("manageBiblesButton").addEventListener("click", function () {
   showSettingsInfo(
     "Bible downloads",
     "Offline Scripture library",
-    "<p>WorshipFlow can support a large downloadable Bible catalog. The first release can start with these 12 redistribution-safe English editions, with the most useful three installed by default.</p>" +
+    "<p>WorshipFlow can support a large downloadable Bible catalog. The first release can start with these 12 open or public-domain English candidates, after each license is checked for the countries where the app will be distributed.</p>" +
     '<div class="bible-starter-list">' +
       '<div><strong>King James Version</strong><span>Installed</span></div>' +
       '<div><strong>World English Bible</strong><span>Installed</span></div>' +
