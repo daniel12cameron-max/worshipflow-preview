@@ -49,12 +49,14 @@ const library = [
     id: "psalm-23",
     type: "bible",
     title: "Psalm 23",
-    meta: "Bible passage · Demo text",
+    meta: "World English Bible · Verse-by-verse",
     sections: [
-      { label: "Verse 1", short: "v1", lines: ["The Lord is my shepherd; I shall not want."] },
-      { label: "Verse 2", short: "v2", lines: ["He leads me beside still waters."] },
-      { label: "Verse 3", short: "v3", lines: ["He restores my soul."] },
-      { label: "Verse 6", short: "v6", lines: ["Surely goodness and mercy shall follow me all my days."] }
+      { label: "Verse 1", short: "v1", lines: ["Yahweh is my shepherd: I shall lack nothing."] },
+      { label: "Verse 2", short: "v2", lines: ["He makes me lie down in green pastures. He leads me beside still waters."] },
+      { label: "Verse 3", short: "v3", lines: ["He restores my soul. He guides me in the paths of righteousness for his name's sake."] },
+      { label: "Verse 4", short: "v4", lines: ["Even though I walk through the valley of the shadow of death, I will fear no evil, for you are with me."] },
+      { label: "Verse 5", short: "v5", lines: ["You prepare a table before me in the presence of my enemies. You anoint my head with oil. My cup runs over."] },
+      { label: "Verse 6", short: "v6", lines: ["Surely goodness and loving kindness shall follow me all the days of my life, and I will dwell in Yahweh's house forever."] }
     ]
   },
   {
@@ -151,6 +153,7 @@ let program = {
   itemId: "welcome",
   title: "Sunday Welcome",
   cueIndex: 0,
+  lineMode: 1,
   lines: ["WELCOME", "We are glad you are here"],
   nextLines: ["Amazing grace, how sweet the sound"]
 };
@@ -238,6 +241,7 @@ function renderScreens() {
   }
   updateStagePreview();
   renderOutputPreview();
+  renderLiveNavigator();
 }
 
 function renderSchedule() {
@@ -295,6 +299,19 @@ function syncCueSelection() {
   });
 }
 
+function renderLiveNavigator() {
+  const liveItem = itemById(program.itemId);
+  const liveCues = buildCues(liveItem, program.lineMode || 1);
+  byId("liveNavigatorType").textContent = liveItem ? "Live " + typeLabel(liveItem.type, liveItem.mediaKind).toLowerCase() : "Live item";
+  byId("liveNavigatorTitle").textContent = liveItem ? liveItem.title : program.title;
+  byId("liveCueList").innerHTML = liveCues.length ? liveCues.map(function (cue, index) {
+    const active = programMode === "content" && index === program.cueIndex;
+    return '<button class="live-cue-button' + (active ? " active" : "") + '" data-live-cue-index="' + index + '" type="button" aria-label="Send ' + escapeHtml(cue.code) + ' live">' +
+      '<span class="cue-code">' + escapeHtml(cue.code) + '</span>' +
+      '<span class="cue-lines">' + cue.lines.map(function (line) { return "<span>" + escapeHtml(line) + "</span>"; }).join("") + '</span></button>';
+  }).join("") : '<div class="empty-state">No live slides are available.</div>';
+}
+
 function renderResources() {
   const query = byId("searchInput").value.trim().toLowerCase();
   const labels = { song: "Songs", bible: "Scripture", media: "Media", announcement: "Announcements" };
@@ -324,9 +341,17 @@ function renderBackgrounds() {
 }
 
 function renderCurrentItem() {
+  const isSong = currentItem.type === "song";
+  const isScripture = currentItem.type === "bible";
   byId("currentType").textContent = typeLabel(currentItem.type, currentItem.mediaKind);
   byId("currentTitle").textContent = currentItem.title;
   byId("currentMeta").textContent = currentItem.meta;
+  document.querySelectorAll(".song-line-control").forEach(function (control) { control.hidden = !isSong; });
+  byId("scriptureControls").hidden = !isScripture;
+  byId("previewNavigatorType").textContent = isSong ? "Preview song" : isScripture ? "Preview Scripture" : "Preview item";
+  byId("previewNavigatorTitle").textContent = currentItem.title;
+  byId("previewHelp").innerHTML = isScripture ? "<b>Scripture:</b> search a reference, then preview a verse" : "<b>Preview:</b> click a slide to prepare it";
+  byId("liveHelp").innerHTML = isScripture ? "<b>Live verses:</b> one click in the green panel changes the verse" : "<b>Live:</b> one click in the green panel sends it immediately";
   renderCues();
   renderScreens();
   renderResources();
@@ -414,6 +439,7 @@ function sendToProgram(index) {
     itemId: currentItem.id,
     title: currentItem.title,
     cueIndex: index,
+    lineMode: currentItem.type === "song" ? lineMode : 1,
     lines: cue.lines.slice(),
     nextLines: nextCue ? nextCue.lines.slice() : ["End of item"]
   };
@@ -423,6 +449,22 @@ function sendToProgram(index) {
   renderSchedule();
   syncCueSelection();
   showToast(cue.code + " is now Live");
+}
+
+function sendLiveCue(index) {
+  const liveItem = itemById(program.itemId);
+  const liveCues = buildCues(liveItem, program.lineMode || 1);
+  const cue = liveCues[index];
+  if (!cue || !liveItem) return;
+  const nextCue = liveCues[index + 1];
+  program.cueIndex = index;
+  program.lines = cue.lines.slice();
+  program.nextLines = nextCue ? nextCue.lines.slice() : ["End of item"];
+  programMode = "content";
+  renderScreens();
+  renderSchedule();
+  syncCueSelection();
+  showToast(cue.code + " changed Live with one click");
 }
 
 function updateStagePreview() {
@@ -576,6 +618,11 @@ byId("cueList").addEventListener("dblclick", function (event) {
   if (button) sendToProgram(Number(button.dataset.cueIndex));
 });
 
+byId("liveCueList").addEventListener("click", function (event) {
+  const button = event.target.closest("[data-live-cue-index]");
+  if (button) sendLiveCue(Number(button.dataset.liveCueIndex));
+});
+
 document.querySelector(".line-mode").addEventListener("click", function (event) {
   const button = event.target.closest("[data-line-mode]");
   if (!button) return;
@@ -583,7 +630,18 @@ document.querySelector(".line-mode").addEventListener("click", function (event) 
   document.querySelectorAll("[data-line-mode]").forEach(function (entry) { entry.classList.toggle("active", entry === button); });
   previewCueIndex = 0;
   renderCurrentItem();
-  showToast(lineMode === 1 ? "Line Mode: one line per click" : "Slide Mode: two lines per click");
+  showToast("Song layout: " + lineMode + (lineMode === 1 ? " line" : " lines") + " per slide");
+});
+
+byId("loadScriptureReference").addEventListener("click", function () {
+  const reference = byId("scriptureReference").value.trim() || "Psalm 23";
+  const version = byId("scriptureVersion").value;
+  const scriptureItem = itemById("psalm-23");
+  if (scriptureItem) {
+    scriptureItem.meta = version + " · Verse-by-verse preview";
+    loadItem(scriptureItem);
+  }
+  showToast(reference + " loaded as a verse list in " + version);
 });
 
 function selectResourceTab(tabName) {
