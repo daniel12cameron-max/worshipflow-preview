@@ -114,6 +114,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
   cursor: pointer;
 }
 .quiet-button { padding: 8px 4px; font-size: 12px; }
+.settings-button { display: inline-flex; align-items: center; gap: 5px; }
+.settings-button > span { color: #9dccf0; font-size: 13px; }
 .focus-button.active { color: #e8f5ff; background: #29445b; }
 .text-button { padding: 4px; color: #81bceb; font-size: 11px; }
 .icon-button {
@@ -753,6 +755,76 @@ dialog textarea { min-height: 120px; resize: vertical; line-height: 1.45; }
 .info-content ol { padding-left: 18px; }
 .info-content li { margin: 7px 0; }
 
+.settings-dialog { width: min(850px, calc(100vw - 28px)); }
+.settings-intro { margin-bottom: 12px; }
+.account-settings-card {
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #41617b;
+  border-radius: 5px;
+  padding: 11px;
+  background: linear-gradient(110deg,#263a4b,#202a33);
+}
+.account-settings-card strong, .account-settings-card small,
+.settings-group-heading strong, .settings-group-heading small,
+.settings-row strong, .settings-row small { display: block; }
+.account-settings-card strong { font-size: 12px; }
+.account-settings-card small { margin-top: 3px; color: #a1b2c0; font-size: 9px; }
+.settings-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  background: #34536b;
+  color: #d9efff;
+  font-size: 10px;
+  font-weight: 750;
+}
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 10px; }
+.settings-group { border: 1px solid #3d4651; border-radius: 4px; background: #1f242a; overflow: hidden; }
+.settings-group-heading { display: grid; grid-template-columns: 34px 1fr; align-items: center; gap: 9px; padding: 10px; background: #292f37; }
+.settings-group-heading strong { font-size: 11px; }
+.settings-group-heading small { margin-top: 2px; color: #8996a2; font-size: 8px; }
+.settings-row {
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid #343c45;
+  padding: 8px 10px;
+}
+.settings-row strong { font-size: 10px; }
+.settings-row small { margin-top: 2px; color: #87939f; font-size: 8px; }
+.settings-row em { color: #a5b0bb; font-size: 8px; font-style: normal; white-space: nowrap; }
+.settings-row em.status-ready { color: #69d293; }
+.settings-link {
+  width: 100%;
+  min-height: 34px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 0;
+  border-top: 1px solid #343c45;
+  padding: 7px 10px;
+  background: #242a31;
+  color: #90c9f3;
+  text-align: left;
+  font-size: 9px;
+  cursor: pointer;
+}
+.settings-link:hover { background: #2b3741; color: #dff2ff; }
+.settings-link span { font-size: 15px; }
+.settings-demo-note { margin: 10px 2px 0; color: #7f8b96; font-size: 9px; line-height: 1.45; }
+.bible-starter-list { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 11px; }
+.bible-starter-list div { display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid #3d4650; padding: 7px 8px; background: #1e242a; }
+.bible-starter-list strong { font-size: 9px; }
+.bible-starter-list span { color: #79d59c; font-size: 8px; }
+.bible-starter-list span.available { color: #8fc9f2; }
+
 .toast {
   position: fixed;
   left: 50%;
@@ -809,6 +881,8 @@ dialog textarea { min-height: 120px; resize: vertical; line-height: 1.45; }
 
 @media (max-width: 640px) {
   .preview-badge, .save-state { display: none; }
+  .settings-button { font-size: 0; }
+  .settings-button > span { font-size: 15px; }
   .main-nav > button { min-width: 0; flex: 1; padding: 0 5px; }
   .screen-strip { position: static; grid-template-columns: 1fr; margin: 0; box-shadow: none; }
   .take-controls { grid-template-columns: 1fr auto; align-items: center; }
@@ -831,6 +905,9 @@ dialog textarea { min-height: 120px; resize: vertical; line-height: 1.45; }
   .stage-screen { padding: 12px; }
   .stage-footer { font-size: 8px; }
   .media-choice-grid { grid-template-columns: 1fr; }
+  .settings-grid, .bible-starter-list { grid-template-columns: 1fr; }
+  .account-settings-card { grid-template-columns: 34px 1fr; }
+  .account-settings-card button { grid-column: 1 / -1; width: 100%; }
   .large-output-canvas { padding: 18px; }
   .large-output-canvas .output-ndi-copy { margin: 0 -18px -18px; }
 }
