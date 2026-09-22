@@ -9,8 +9,9 @@ const library = [
   {
     id: "welcome",
     type: "media",
+    mediaKind: "image",
     title: "Sunday Welcome",
-    meta: "Welcome slide · Media team",
+    meta: "Image · Welcome slide · Media team",
     atomic: true,
     sections: [{ label: "Welcome", short: "W", lines: ["WELCOME", "We are glad you are here"] }]
   },
@@ -67,13 +68,53 @@ const library = [
   {
     id: "message",
     type: "media",
+    mediaKind: "presentation",
     title: "Sunday Message",
-    meta: "Pastor Allen · Presentation",
+    meta: "PowerPoint · Pastor Allen",
     atomic: true,
     sections: [
       { label: "Title", short: "T", lines: ["WALKING BY FAITH", "Pastor Allen"] },
       { label: "Point 1", short: "P1", lines: ["Faith begins", "where certainty ends"] }
     ]
+  },
+  {
+    id: "countdown-video",
+    type: "media",
+    mediaKind: "video",
+    title: "Service Countdown",
+    meta: "Video · MP4 · 05:00",
+    atomic: true,
+    sections: [{ label: "Video", short: "V", lines: ["SERVICE COUNTDOWN", "Video ready · 05:00"] }]
+  },
+  {
+    id: "missions-image",
+    type: "media",
+    mediaKind: "image",
+    title: "Missions Sunday",
+    meta: "Image · PNG · 1920 × 1080",
+    atomic: true,
+    sections: [{ label: "Image", short: "I", lines: ["MISSIONS SUNDAY", "Reaching every nation"] }]
+  },
+  {
+    id: "sermon-powerpoint",
+    type: "media",
+    mediaKind: "presentation",
+    title: "Sermon Slides",
+    meta: "PowerPoint · 12 slides",
+    atomic: true,
+    sections: [
+      { label: "Slide 1", short: "P1", lines: ["WALKING BY FAITH", "Hebrews 11:1"] },
+      { label: "Slide 2", short: "P2", lines: ["Faith sees", "what sight cannot"] }
+    ]
+  },
+  {
+    id: "browser-screen",
+    type: "media",
+    mediaKind: "screen",
+    title: "Browser Screen",
+    meta: "Screen share · Not connected",
+    atomic: true,
+    sections: [{ label: "Screen", short: "S", lines: ["BROWSER SCREEN", "Choose a tab or window to begin"] }]
   }
 ];
 
@@ -114,6 +155,8 @@ let program = {
   nextLines: ["Amazing grace, how sweet the sound"]
 };
 let resourceTab = "song";
+let mediaFilter = "all";
+let selectedOutputView = "stage";
 let ndiEnabled = false;
 let webEnabled = false;
 let serviceReady = true;
@@ -126,12 +169,14 @@ const escapeHtml = function (value) {
   });
 };
 
-function iconFor(type) {
-  return ({ song: "♫", bible: "✦", media: "▧", announcement: "◆" })[type] || "•";
+function iconFor(type, mediaKind) {
+  if (type === "media") return ({ video: "▶", image: "▧", presentation: "P", screen: "⌁" })[mediaKind] || "▧";
+  return ({ song: "♫", bible: "✦", announcement: "◆" })[type] || "•";
 }
 
-function typeLabel(type) {
-  return ({ song: "Song", bible: "Scripture", media: "Presentation", announcement: "Announcement" })[type] || type;
+function typeLabel(type, mediaKind) {
+  if (type === "media") return ({ video: "Video", image: "Image", presentation: "PowerPoint", screen: "Screen share" })[mediaKind] || "Media";
+  return ({ song: "Song", bible: "Scripture", announcement: "Announcement" })[type] || type;
 }
 
 function itemById(id) {
@@ -192,6 +237,7 @@ function renderScreens() {
     byId("programNumber").textContent = programMode === "black" ? "Black screen" : program.title;
   }
   updateStagePreview();
+  renderOutputPreview();
 }
 
 function renderSchedule() {
@@ -201,7 +247,7 @@ function renderSchedule() {
     const live = entry.id === program.scheduleId && programMode === "content";
     return '<button class="schedule-item' + (active ? " active" : "") + (live ? " live-now" : "") + '" data-schedule-index="' + index + '" type="button">' +
       '<span class="schedule-order">' + (index + 1) + '</span>' +
-      '<span><strong>' + escapeHtml(item ? item.title : "Missing item") + '</strong><small>' + escapeHtml(typeLabel(item ? item.type : "item")) + ' · ' + escapeHtml(entry.owner) + '</small></span>' +
+      '<span><strong>' + escapeHtml(item ? item.title : "Missing item") + '</strong><small>' + escapeHtml(typeLabel(item ? item.type : "item", item ? item.mediaKind : null)) + ' · ' + escapeHtml(entry.owner) + '</small></span>' +
       '<span class="schedule-state">' + (live ? "●" : "›") + '</span></button>';
   }).join("");
 }
@@ -252,11 +298,15 @@ function syncCueSelection() {
 function renderResources() {
   const query = byId("searchInput").value.trim().toLowerCase();
   const filtered = library.filter(function (item) {
-    return item.type === resourceTab && (item.title + " " + item.meta).toLowerCase().includes(query);
+    const tabMatch = item.type === resourceTab;
+    const mediaMatch = resourceTab !== "media" || mediaFilter === "all" || item.mediaKind === mediaFilter;
+    return tabMatch && mediaMatch && (item.title + " " + item.meta).toLowerCase().includes(query);
   });
+  byId("mediaSubtabs").hidden = resourceTab !== "media";
+  byId("resourceActionButton").textContent = ({ song: "＋ Add song", bible: "＋ Open Bible", media: "＋ Add media", announcement: "＋ Submit" })[resourceTab] || "＋ Add";
   byId("resourceList").innerHTML = filtered.length ? filtered.map(function (item) {
     return '<button class="resource-item' + (item.id === currentItem.id ? " active" : "") + '" data-resource-id="' + item.id + '" type="button">' +
-      '<span class="resource-icon">' + iconFor(item.type) + '</span>' +
+      '<span class="resource-icon">' + iconFor(item.type, item.mediaKind) + '</span>' +
       '<span><strong>' + escapeHtml(item.title) + '</strong><small>' + escapeHtml(item.meta) + '</small></span></button>';
   }).join("") : '<div class="empty-state">No matching ' + escapeHtml(resourceTab) + ' resources.</div>';
 }
@@ -269,7 +319,7 @@ function renderBackgrounds() {
 }
 
 function renderCurrentItem() {
-  byId("currentType").textContent = typeLabel(currentItem.type);
+  byId("currentType").textContent = typeLabel(currentItem.type, currentItem.mediaKind);
   byId("currentTitle").textContent = currentItem.title;
   byId("currentMeta").textContent = currentItem.meta;
   renderCues();
@@ -296,7 +346,7 @@ function renderPlanner() {
     const item = itemById(entry.contentId);
     const title = item ? item.title : "Missing item";
     return '<div class="planner-item"><span>' + (index + 1) + '</span><div><strong>' + escapeHtml(title) + '</strong>' +
-      '<small>' + escapeHtml(entry.owner) + ' · ' + escapeHtml(typeLabel(item ? item.type : "item")) + '</small></div>' +
+      '<small>' + escapeHtml(entry.owner) + ' · ' + escapeHtml(typeLabel(item ? item.type : "item", item ? item.mediaKind : null)) + '</small></div>' +
       '<div class="planner-move"><button data-move="up" data-index="' + index + '" type="button" aria-label="Move ' + escapeHtml(title) + ' up">↑</button>' +
       '<button data-move="down" data-index="' + index + '" type="button" aria-label="Move ' + escapeHtml(title) + ' down">↓</button></div></div>';
   }).join("");
@@ -314,6 +364,7 @@ function renderOutputState() {
   byId("webStatus").textContent = webEnabled ? "Connected" : "Pair";
   byId("routingWeb").textContent = webEnabled ? "Connected" : "Not paired";
   byId("routingWeb").classList.toggle("good", webEnabled);
+  renderOutputPreview();
 }
 
 function renderAll() {
@@ -375,6 +426,44 @@ function updateStagePreview() {
   byId("stageMessage").textContent = serviceReady ? "Service ready · All systems normal" : "Planning changes in progress";
 }
 
+function outputProgramLines() {
+  if (programMode === "black") return ["BLACK SCREEN"];
+  if (programMode === "clear") return ["OUTPUT CLEARED"];
+  if (programMode === "logo") return ["WORSHIPFLOW", "WELCOME TO CHURCH"];
+  return program.lines.slice();
+}
+
+function outputMarkup(view) {
+  const lines = outputProgramLines();
+  if (view === "stage") {
+    return '<div class="output-stage-copy"><div><small>CURRENT</small><strong>' + escapeHtml(lines.join(" / ")) + '</strong></div>' +
+      '<div class="next"><small>NEXT</small><strong>' + escapeHtml((program.nextLines || ["End of item"]).join(" / ")) + '</strong></div></div>';
+  }
+  if (view === "ndi") {
+    return '<div class="output-ndi-copy"><strong>' + escapeHtml(lines.join(" · ")) + '</strong><small>WorshipFlow NDI · Transparent lower third</small></div>';
+  }
+  return '<div class="output-main-copy">' + lines.map(function (line) { return '<p>' + escapeHtml(line) + '</p>'; }).join("") + '</div>' +
+    (view === "web" ? '<span class="output-web-chip">' + (webEnabled ? "WEB CONNECTED" : "WEB NOT PAIRED") + '</span>' : "");
+}
+
+function renderOutputPreview() {
+  const titles = { main: "Main display", stage: "Stage output", ndi: "NDI stream", web: "Web output" };
+  const badges = { main: "MAIN", stage: "STAGE", ndi: "NDI · " + (ndiEnabled ? "ON" : "OFF"), web: "WEB" };
+  byId("outputPreviewTitle").textContent = titles[selectedOutputView];
+  byId("largeOutputTitle").textContent = titles[selectedOutputView];
+  byId("miniOutputBadge").textContent = badges[selectedOutputView];
+  byId("largeOutputBadge").textContent = badges[selectedOutputView];
+  byId("miniOutputContent").innerHTML = outputMarkup(selectedOutputView);
+  byId("largeOutputContent").innerHTML = outputMarkup(selectedOutputView);
+  byId("miniOutputCanvas").className = "mini-output " + selectedOutputView + "-mini";
+  byId("largeOutputCanvas").className = "large-output-canvas " + selectedOutputView + "-large";
+  setScene(byId("miniOutputCanvas"), programBackground);
+  setScene(byId("largeOutputCanvas"), programBackground);
+  document.querySelectorAll("[data-output-view]").forEach(function (button) {
+    button.classList.toggle("active", button.dataset.outputView === selectedOutputView);
+  });
+}
+
 function updateClock() {
   byId("stageClock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
@@ -401,6 +490,62 @@ function copyDemoLink(label) {
   showToast("Demo link copied");
 }
 
+function syncFocusButton() {
+  const focused = document.body.classList.contains("schedule-collapsed") && document.body.classList.contains("controls-collapsed");
+  byId("focusModeButton").classList.toggle("active", focused);
+  byId("focusModeButton").setAttribute("aria-pressed", String(focused));
+  byId("focusModeButton").textContent = focused ? "Exit focus" : "Focus view";
+}
+
+function setScheduleCollapsed(collapsed) {
+  document.body.classList.toggle("schedule-collapsed", collapsed);
+  byId("toggleSchedulePanel").setAttribute("aria-expanded", String(!collapsed));
+  byId("toggleSchedulePanel").setAttribute("aria-label", collapsed ? "Expand Sunday schedule" : "Collapse Sunday schedule");
+  byId("toggleSchedulePanel").textContent = collapsed ? "›" : "‹";
+  syncFocusButton();
+}
+
+function setControlsCollapsed(collapsed) {
+  document.body.classList.toggle("controls-collapsed", collapsed);
+  byId("toggleControlPanel").setAttribute("aria-expanded", String(!collapsed));
+  byId("toggleControlPanel").setAttribute("aria-label", collapsed ? "Expand output controls" : "Collapse output controls");
+  byId("toggleControlPanel").textContent = collapsed ? "‹" : "›";
+  syncFocusButton();
+}
+
+byId("toggleSchedulePanel").addEventListener("click", function () {
+  setScheduleCollapsed(!document.body.classList.contains("schedule-collapsed"));
+});
+
+byId("toggleControlPanel").addEventListener("click", function () {
+  setControlsCollapsed(!document.body.classList.contains("controls-collapsed"));
+});
+
+byId("focusModeButton").addEventListener("click", function () {
+  const focused = document.body.classList.contains("schedule-collapsed") && document.body.classList.contains("controls-collapsed");
+  setScheduleCollapsed(!focused);
+  setControlsCollapsed(!focused);
+  showToast(focused ? "Side panels restored" : "Focus view enabled");
+});
+
+byId("toggleLineWorkspace").addEventListener("click", function () {
+  const panel = document.querySelector(".line-workspace");
+  const collapsed = panel.classList.toggle("collapsed");
+  document.querySelector(".operator-panel").classList.toggle("lines-collapsed", collapsed);
+  this.setAttribute("aria-expanded", String(!collapsed));
+  this.setAttribute("aria-label", collapsed ? "Expand lyric lines" : "Collapse lyric lines");
+  this.textContent = collapsed ? "⌄" : "⌃";
+});
+
+byId("toggleResourceTray").addEventListener("click", function () {
+  const panel = document.querySelector(".resource-tray");
+  const collapsed = panel.classList.toggle("collapsed");
+  document.querySelector(".operator-panel").classList.toggle("resources-collapsed", collapsed);
+  this.setAttribute("aria-expanded", String(!collapsed));
+  this.setAttribute("aria-label", collapsed ? "Expand resource library" : "Collapse resource library");
+  this.textContent = collapsed ? "⌄" : "⌃";
+});
+
 byId("scheduleList").addEventListener("click", function (event) {
   const button = event.target.closest("[data-schedule-index]");
   if (button) loadScheduleIndex(Number(button.dataset.scheduleIndex));
@@ -426,12 +571,31 @@ document.querySelector(".line-mode").addEventListener("click", function (event) 
   showToast(lineMode === 1 ? "Line Mode: one line per click" : "Slide Mode: two lines per click");
 });
 
+function selectResourceTab(tabName) {
+  resourceTab = tabName;
+  document.querySelectorAll("[data-resource-tab]").forEach(function (button) {
+    button.classList.toggle("active", button.dataset.resourceTab === resourceTab);
+  });
+  renderResources();
+}
+
+function selectMediaFilter(filterName) {
+  mediaFilter = filterName;
+  document.querySelectorAll("[data-media-filter]").forEach(function (button) {
+    button.classList.toggle("active", button.dataset.mediaFilter === mediaFilter);
+  });
+  renderResources();
+}
+
 document.querySelector(".resource-tabs").addEventListener("click", function (event) {
   const button = event.target.closest("[data-resource-tab]");
   if (!button) return;
-  resourceTab = button.dataset.resourceTab;
-  document.querySelectorAll("[data-resource-tab]").forEach(function (entry) { entry.classList.toggle("active", entry === button); });
-  renderResources();
+  selectResourceTab(button.dataset.resourceTab);
+});
+
+byId("mediaSubtabs").addEventListener("click", function (event) {
+  const button = event.target.closest("[data-media-filter]");
+  if (button) selectMediaFilter(button.dataset.mediaFilter);
 });
 
 byId("resourceList").addEventListener("click", function (event) {
@@ -476,7 +640,12 @@ byId("logoButton").addEventListener("click", function () {
   showToast("Welcome logo is Live");
 });
 
-byId("addSongButton").addEventListener("click", function () { openDialog("songDialog"); });
+byId("resourceActionButton").addEventListener("click", function () {
+  if (resourceTab === "song") openDialog("songDialog");
+  if (resourceTab === "media") openDialog("mediaDialog");
+  if (resourceTab === "bible") showInfo("Open a Bible", "Scripture library", "<p>The Windows app will include installed Bible translations, passage search, verse ranges, and offline use. This preview currently includes Psalm 23.</p>");
+  if (resourceTab === "announcement") openDialog("announcementDialog");
+});
 byId("songForm").addEventListener("submit", function (event) {
   if (!event.submitter || event.submitter.value !== "default") return;
   event.preventDefault();
@@ -498,11 +667,50 @@ byId("songForm").addEventListener("submit", function (event) {
   byId("songTitleInput").value = "";
   byId("lyricsInput").value = "";
   byId("songDialog").close();
-  resourceTab = "song";
-  document.querySelectorAll("[data-resource-tab]").forEach(function (button) { button.classList.toggle("active", button.dataset.resourceTab === "song"); });
+  selectResourceTab("song");
   loadItem(item);
   const totalLines = sections.reduce(function (total, section) { return total + section.lines.length; }, 0);
   showToast(title + " added with " + totalLines + " selectable lines");
+});
+
+byId("mediaForm").addEventListener("click", function (event) {
+  const button = event.target.closest("[data-media-add]");
+  if (!button) return;
+  const kind = button.dataset.mediaAdd;
+  if (kind === "screen") {
+    byId("mediaDialog").close();
+    setTimeout(function () { openDialog("screenShareDialog"); }, 120);
+    return;
+  }
+  const details = {
+    image: { title: "New Church Image", meta: "Image · PNG · Added in preview", label: "Image", short: "I", lines: ["NEW CHURCH IMAGE", "Ready in Preview"] },
+    video: { title: "New Church Video", meta: "Video · MP4 · Added in preview", label: "Video", short: "V", lines: ["NEW CHURCH VIDEO", "Video ready to play"] },
+    presentation: { title: "Imported PowerPoint", meta: "PowerPoint · 8 slides · Added in preview", label: "Slide 1", short: "P1", lines: ["IMPORTED POWERPOINT", "Slide 1 of 8"] }
+  }[kind];
+  if (!details) return;
+  const item = { id: "custom-media-" + Date.now(), type: "media", mediaKind: kind, title: details.title, meta: details.meta, atomic: true, sections: [{ label: details.label, short: details.short, lines: details.lines }] };
+  library.push(item);
+  byId("mediaDialog").close();
+  selectResourceTab("media");
+  selectMediaFilter(kind);
+  loadItem(item);
+  showToast(details.title + " added to the offline media library demo");
+});
+
+byId("screenShareForm").addEventListener("submit", function (event) {
+  if (!event.submitter || event.submitter.value !== "default") return;
+  event.preventDefault();
+  const selected = document.querySelector('input[name="shareSource"]:checked');
+  const source = selected ? selected.value : "Browser tab";
+  const audio = byId("shareAudio").checked;
+  const screenItem = itemById("browser-screen");
+  screenItem.meta = "Screen share · " + source + (audio ? " · Audio" : "");
+  screenItem.sections = [{ label: "Screen", short: "S", lines: [source.toUpperCase(), audio ? "Computer audio included" : "Video only"] }];
+  byId("screenShareDialog").close();
+  selectResourceTab("media");
+  selectMediaFilter("screen");
+  loadItem(screenItem);
+  showToast(source + " placed in Preview");
 });
 
 byId("submitAnnouncementButton").addEventListener("click", function () { openDialog("announcementDialog"); });
@@ -614,6 +822,25 @@ byId("addScheduleItemButton").addEventListener("click", function () {
   showToast(currentItem.title + " added to the end of the schedule");
 });
 
+byId("toggleOutputPreview").addEventListener("click", function () {
+  const panel = byId("outputPreviewPanel");
+  const collapsed = panel.classList.toggle("collapsed");
+  this.setAttribute("aria-expanded", String(!collapsed));
+  this.querySelector(".output-preview-chevron").textContent = collapsed ? "⌄" : "⌃";
+});
+
+document.querySelector(".output-view-tabs").addEventListener("click", function (event) {
+  const button = event.target.closest("[data-output-view]");
+  if (!button) return;
+  selectedOutputView = button.dataset.outputView;
+  renderOutputPreview();
+});
+
+byId("openOutputLargeButton").addEventListener("click", function () {
+  renderOutputPreview();
+  openDialog("outputViewerDialog");
+});
+
 byId("stageButton").addEventListener("click", function () {
   updateStagePreview();
   updateClock();
@@ -642,7 +869,7 @@ byId("helpButton").addEventListener("click", function () {
   showInfo(
     "Try the Sunday workflow",
     "Interactive preview",
-    "<ol><li>Choose an item from the Sunday Schedule.</li><li>Click one lyric line to place it in Preview.</li><li>Double-click it—or press <b>Go Live</b>—to send it to the congregation.</li><li>Open <b>Plan service</b> to reorder the schedule and see the church team.</li><li>Submit and approve an announcement.</li><li>Preview Stage Output, then try the NDI and Web Output controls.</li></ol>"
+    "<ol><li>The Preview and Live monitors stay pinned while you scroll through lyrics and media.</li><li>Choose an item from the Sunday Schedule, then click a lyric line to place it in Preview.</li><li>Double-click it—or press <b>Go Live</b>—to send it to the congregation.</li><li>Use the arrow controls or <b>Focus view</b> to collapse panels and make more room.</li><li>Open <b>Media</b> for videos, images, PowerPoint, and browser screen sharing.</li><li>Expand <b>Other screens</b> to inspect Main, Stage, NDI, and Web outputs.</li></ol>"
   );
 });
 
