@@ -9,6 +9,7 @@ WorshipFlow is an offline-first church presentation app with a simple, schedule-
 ## Try the Sunday workflow
 
 - Choose an item from the Sunday Schedule
+- Use the resource dock beneath the schedule to open Songs, Scripture, Media, or Notices in the larger panel
 - Keep Preview and Live pinned while scrolling through long lyric and media lists
 - Single-click a lyric line to place it in Preview
 - Double-click a line, press Enter, or use Go Live to send it to the congregation
