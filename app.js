@@ -297,12 +297,17 @@ function syncCueSelection() {
 
 function renderResources() {
   const query = byId("searchInput").value.trim().toLowerCase();
+  const labels = { song: "Songs", bible: "Scripture", media: "Media", announcement: "Announcements" };
+  const icons = { song: "♫", bible: "✦", media: "▧", announcement: "◆" };
   const filtered = library.filter(function (item) {
     const tabMatch = item.type === resourceTab;
     const mediaMatch = resourceTab !== "media" || mediaFilter === "all" || item.mediaKind === mediaFilter;
     return tabMatch && mediaMatch && (item.title + " " + item.meta).toLowerCase().includes(query);
   });
   byId("mediaSubtabs").hidden = resourceTab !== "media";
+  byId("currentResourceLabel").textContent = labels[resourceTab] || "Resources";
+  byId("currentResourceIcon").textContent = icons[resourceTab] || "•";
+  byId("searchInput").placeholder = "Search " + (labels[resourceTab] || "resources").toLowerCase();
   byId("resourceActionButton").textContent = ({ song: "＋ Add song", bible: "＋ Open Bible", media: "＋ Add media", announcement: "＋ Submit" })[resourceTab] || "＋ Add";
   byId("resourceList").innerHTML = filtered.length ? filtered.map(function (item) {
     return '<button class="resource-item' + (item.id === currentItem.id ? " active" : "") + '" data-resource-id="' + item.id + '" type="button">' +
@@ -537,13 +542,23 @@ byId("toggleLineWorkspace").addEventListener("click", function () {
   this.textContent = collapsed ? "⌄" : "⌃";
 });
 
-byId("toggleResourceTray").addEventListener("click", function () {
+function setResourceTrayCollapsed(collapsed) {
   const panel = document.querySelector(".resource-tray");
-  const collapsed = panel.classList.toggle("collapsed");
+  panel.classList.toggle("collapsed", collapsed);
   document.querySelector(".operator-panel").classList.toggle("resources-collapsed", collapsed);
-  this.setAttribute("aria-expanded", String(!collapsed));
-  this.setAttribute("aria-label", collapsed ? "Expand resource library" : "Collapse resource library");
-  this.textContent = collapsed ? "⌄" : "⌃";
+  byId("toggleResourceTray").setAttribute("aria-expanded", String(!collapsed));
+  byId("toggleResourceTray").setAttribute("aria-label", collapsed ? "Expand resource library" : "Collapse resource library");
+  byId("toggleResourceTray").textContent = collapsed ? "⌄" : "⌃";
+}
+
+byId("toggleResourceTray").addEventListener("click", function () {
+  setResourceTrayCollapsed(!document.querySelector(".resource-tray").classList.contains("collapsed"));
+});
+
+byId("librarySearchButton").addEventListener("click", function () {
+  setResourceTrayCollapsed(false);
+  document.querySelector(".resource-tray").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  setTimeout(function () { byId("searchInput").focus(); }, 180);
 });
 
 byId("scheduleList").addEventListener("click", function (event) {
@@ -576,7 +591,9 @@ function selectResourceTab(tabName) {
   document.querySelectorAll("[data-resource-tab]").forEach(function (button) {
     button.classList.toggle("active", button.dataset.resourceTab === resourceTab);
   });
+  setResourceTrayCollapsed(false);
   renderResources();
+  if (window.innerWidth <= 900) document.querySelector(".resource-tray").scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function selectMediaFilter(filterName) {
