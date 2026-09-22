@@ -6,7 +6,7 @@
   <meta name="description" content="Interactive preview of WorshipFlow, an offline-first church presentation and service-planning application.">
   <title>WorshipFlow — Sunday Presentation</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232778c8'/%3E%3Cpath d='M13 18h9l5 27 5-19h7l5 19 5-27h9L50 50H39l-4-15-4 15H20z' fill='white'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="app.css?v=20260922f">
+  <link rel="stylesheet" href="app.css?v=20260922g">
 </head>
 <body>
   <div class="app-shell">
@@ -112,19 +112,41 @@
               <h2 id="currentTitle">Amazing Grace</h2>
               <p id="currentMeta">John Newton · Public domain</p>
             </div>
-            <div class="line-mode" role="group" aria-label="Lines per screen">
-              <span>Show</span>
-              <button class="active" data-line-mode="1" type="button">1 line</button>
-              <button data-line-mode="2" type="button">2 lines</button>
+            <div class="line-mode" role="group" aria-label="Song lines and Scripture controls">
+              <span class="song-line-control">Show</span>
+              <button class="active song-line-control" data-line-mode="1" type="button">1 line</button>
+              <button class="song-line-control" data-line-mode="2" type="button">2 lines</button>
+              <button class="song-line-control" data-line-mode="3" type="button">3 lines</button>
+              <button class="song-line-control" data-line-mode="4" type="button">4 lines</button>
+              <div class="scripture-controls" id="scriptureControls" hidden>
+                <label><span>Version</span><select id="scriptureVersion"><option>WEB</option><option disabled>KJV — download in Windows app</option><option disabled>BSB — download in Windows app</option></select></label>
+                <label class="scripture-reference"><span>Reference</span><input id="scriptureReference" value="Psalm 23" aria-label="Scripture reference"></label>
+                <button id="loadScriptureReference" type="button">Load verses</button>
+              </div>
               <button class="section-toggle" id="toggleLineWorkspace" type="button" aria-label="Collapse lyric lines" aria-expanded="true">⌃</button>
             </div>
           </div>
 
           <div class="line-help">
-            <span><b>Click a line</b> to place it in Preview</span>
-            <span><b>Double-click</b> to send it Live</span>
+            <span id="previewHelp"><b>Preview:</b> click a lyric slide to prepare it</span>
+            <span id="liveHelp"><b>Live:</b> one click in the green panel sends it immediately</span>
           </div>
-          <div class="cue-list" id="cueList"></div>
+          <div class="cue-workflow">
+            <section class="live-cue-panel" aria-label="Live slide navigator">
+              <div class="cue-panel-heading live-heading">
+                <div><i></i><span><small id="liveNavigatorType">Live item</small><strong id="liveNavigatorTitle">Sunday Welcome</strong></span></div>
+                <em>Single-click Live</em>
+              </div>
+              <div class="live-cue-list" id="liveCueList"></div>
+            </section>
+            <section class="preview-cue-panel" aria-label="Preview slide navigator">
+              <div class="cue-panel-heading preview-heading">
+                <div><i></i><span><small id="previewNavigatorType">Preview song</small><strong id="previewNavigatorTitle">Amazing Grace</strong></span></div>
+                <em>Prepare next</em>
+              </div>
+              <div class="cue-list" id="cueList"></div>
+            </section>
+          </div>
         </section>
 
         <section class="resource-tray" aria-label="Resource library">
@@ -459,6 +481,6 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=20260922f"></script>
+  <script src="app.js?v=20260922g"></script>
 </body>
 </html>
