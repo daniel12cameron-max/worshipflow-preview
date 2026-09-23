@@ -164,6 +164,8 @@ let ndiEnabled = false;
 let webEnabled = false;
 let serviceReady = true;
 let toastTimer;
+let stageCue = { active: false, count: 10, label: "START IN", note: "Instrumental ready" };
+let stageCueTimer;
 
 const byId = function (id) { return document.getElementById(id); };
 const escapeHtml = function (value) {
@@ -470,7 +472,12 @@ function sendLiveCue(index) {
 function updateStagePreview() {
   byId("stageCurrent").textContent = programMode === "content" ? program.lines.join(" / ") : programMode === "black" ? "Black screen" : programMode === "logo" ? "Welcome logo" : "Program cleared";
   byId("stageNext").textContent = program.nextLines ? program.nextLines.join(" / ") : "End of item";
-  byId("stageMessage").textContent = serviceReady ? "Service ready · All systems normal" : "Planning changes in progress";
+  byId("stageMessage").textContent = stageCue.active ? stageCue.note : serviceReady ? "Service ready · All systems normal" : "Planning changes in progress";
+  const overlay = byId("stageCueOverlay");
+  overlay.hidden = !stageCue.active;
+  byId("stageCueLabel").textContent = stageCue.label;
+  byId("stageCueCount").textContent = stageCue.count > 0 ? stageCue.count : "START";
+  byId("stageCueNote").textContent = stageCue.note;
 }
 
 function outputProgramLines() {
@@ -483,7 +490,8 @@ function outputProgramLines() {
 function outputMarkup(view) {
   const lines = outputProgramLines();
   if (view === "stage") {
-    return '<div class="output-stage-copy"><div><small>CURRENT</small><strong>' + escapeHtml(lines.join(" / ")) + '</strong></div>' +
+    const cue = stageCue.active ? '<div class="output-stage-cue"><small>' + escapeHtml(stageCue.label) + '</small><b>' + (stageCue.count > 0 ? stageCue.count : "START") + '</b><span>' + escapeHtml(stageCue.note) + '</span></div>' : '';
+    return cue + '<div class="output-stage-copy"><div><small>CURRENT</small><strong>' + escapeHtml(lines.join(" / ")) + '</strong></div>' +
       '<div class="next"><small>NEXT</small><strong>' + escapeHtml((program.nextLines || ["End of item"]).join(" / ")) + '</strong></div></div>';
   }
   if (view === "ndi") {
@@ -920,6 +928,52 @@ byId("stageButton").addEventListener("click", function () {
   updateStagePreview();
   updateClock();
   openDialog("stageDialog");
+});
+
+function renderStageCue() {
+  updateStagePreview();
+  renderOutputPreview();
+}
+
+function clearStageCountdownTimer() {
+  clearInterval(stageCueTimer);
+  stageCueTimer = null;
+}
+
+byId("startStageCountdown").addEventListener("click", function () {
+  clearStageCountdownTimer();
+  stageCue.active = true;
+  stageCue.count = Number(byId("stageCueSeconds").value) || 10;
+  stageCue.label = "START IN";
+  stageCue.note = byId("stageCueNoteInput").value.trim() || "Instrumental ready";
+  renderStageCue();
+  showToast("Stage countdown started — congregation output unchanged");
+  stageCueTimer = setInterval(function () {
+    stageCue.count -= 1;
+    if (stageCue.count <= 0) {
+      stageCue.count = 0;
+      stageCue.label = "CUE";
+      clearStageCountdownTimer();
+    }
+    renderStageCue();
+  }, 1000);
+});
+
+byId("sendStageGoCue").addEventListener("click", function () {
+  clearStageCountdownTimer();
+  stageCue.active = true;
+  stageCue.count = 0;
+  stageCue.label = "CUE";
+  stageCue.note = byId("stageCueNoteInput").value.trim() || "Instrumental ready";
+  renderStageCue();
+  showToast("START cue sent to Stage only");
+});
+
+byId("clearStageCue").addEventListener("click", function () {
+  clearStageCountdownTimer();
+  stageCue.active = false;
+  renderStageCue();
+  showToast("Stage cue cleared");
 });
 
 byId("ndiButton").addEventListener("click", function () {
