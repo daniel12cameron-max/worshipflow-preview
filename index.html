@@ -364,10 +364,25 @@
       </div>
       <div class="stage-screen">
         <div class="stage-top"><span>WORSHIPFLOW STAGE</span><strong id="stageClock">10:30:00</strong></div>
+        <div class="stage-cue-overlay" id="stageCueOverlay" hidden>
+          <small id="stageCueLabel">START IN</small>
+          <strong id="stageCueCount">10</strong>
+          <span id="stageCueNote">Instrumental ready</span>
+        </div>
         <div class="stage-current"><small>CURRENT</small><p id="stageCurrent">Amazing grace, how sweet the sound</p></div>
         <div class="stage-next"><small>NEXT</small><p id="stageNext">That saved a wretch like me</p></div>
         <div class="stage-footer"><span>Service 00:18:42</span><span id="stageMessage">Welcome, worship team</span></div>
       </div>
+      <section class="stage-cue-controls" aria-label="Stage cue controls">
+        <div class="stage-cue-heading"><div><strong>Send a private stage cue</strong><small>Only the singer and worship team will see it.</small></div><span>STAGE ONLY</span></div>
+        <label>Note to team<input id="stageCueNoteInput" type="text" value="Instrumental ready" maxlength="60"></label>
+        <div class="stage-cue-actions">
+          <label>Countdown<select id="stageCueSeconds"><option value="5">5 seconds</option><option value="10" selected>10 seconds</option><option value="15">15 seconds</option><option value="30">30 seconds</option></select></label>
+          <button class="primary-button" id="startStageCountdown" type="button">Start countdown</button>
+          <button class="secondary-button" id="sendStageGoCue" type="button">Show START now</button>
+          <button class="secondary-button" id="clearStageCue" type="button">Clear cue</button>
+        </div>
+      </section>
       <div class="dialog-actions"><button class="primary-button" value="default" type="submit">Close preview</button></div>
     </form>
   </dialog>
@@ -481,6 +496,6 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=20260922g"></script>
+  <script src="app.js?v=20260923a"></script>
 </body>
 </html>
